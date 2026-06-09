@@ -1,0 +1,8 @@
+{
+  "name": "example_site",
+  "version": "1.0.0",
+  "site_url": "https://example-novel-site.com",
+  "enabled": true,
+  "author": "your_name",
+  "description": "Parser for example novel site"
+}
