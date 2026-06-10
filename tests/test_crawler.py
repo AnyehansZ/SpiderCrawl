@@ -8,5 +8,5 @@ manager = Manager()
 print(f"Extensions loaded: {list(manager.extensions.keys())}")
 
 # Test crawl
-result = manager.crawl("https://example-novel-site.com/chapter1")
+result = manager.crawl("https://example-site.com")
 print(f"\nCrawl result: {result}")

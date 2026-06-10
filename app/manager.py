@@ -1,15 +1,17 @@
 from typing import Optional, Dict
 from urllib.parse import urlparse
-from app.database.db import get_connection, init_db
-from app.schema import NovelCreate, ExtensionResponse
+from app.database.db import init_db
+from app.extension_manager import ExtensionManager
 from app.config import EXTENSIONS_DIR
 import json
 import importlib
+
 
 class Manager:
     def __init__(self):
         init_db()
         self.extensions = {}
+        self.ext_manager = ExtensionManager()
         self.load_extension_registry()
     
     def load_extension_registry(self):
@@ -52,7 +54,23 @@ class Manager:
         
         if not site_name:
             return {"success": False, "error": "Site not supported", "code": "SITE_NOT_FOUND"}
+        if site_name not in self.extensions:
+            print(f"Extension '{site_name}' not found locally. Checking registry...")
         
+            remote = self.ext_manager.fetch_remote_registry()
+            ext_info = next(
+            (e for e in remote.get("extensions", []) if e["name"] == site_name),
+            None
+            )
+            if ext_info:
+                print(f"Found in registry. Installing...")
+                if self.ext_manager.download_extension(ext_info["download_url"], site_name):
+                    self.load_extension_registry()  # Reload
+                else:
+                    return {"success": False, "error": "Failed to install extension", "code": "EXT_INSTALL_FAILED"}
+            else:
+                return {"success": False, "error": "Extension not in registry", "code": "EXT_NOT_FOUND"}
+    
         extension = self.get_extension(site_name)
         if not extension:
             return {"success": False, "error": "Extension failed to load", "code": "EXT_LOAD_FAILED"}

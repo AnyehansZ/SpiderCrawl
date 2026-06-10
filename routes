@@ -1,7 +1,6 @@
 novel-crawler/
 ├── app/
 │   ├── __init__.py
-│   ├── main.py              # Entry point
 │   ├── manager.py           # Router/orchestrator
 │   ├── config.py            # Settings
 │   ├── schema.py            # Data models
@@ -27,7 +26,7 @@ novel-crawler/
 ├── main.py                  # CLI entry point
 └── requirements.txt
 
-
+from app.utils.helpers import fetch_html
 
 novels (id, title, author, source_url, source_site, created_at, updated_at)
 chapters (id, novel_id, chapter_num, title, content, crawled_at)
@@ -59,3 +58,48 @@ Local App (Works in exe)
 │   └── ...
 ├── extension_manager.py   # Downloads & installs
 └── registry_cache.json    # Local cache of remote registry
+
+novel.epub (ZIP)
+├── META-INF/
+│   └── container.xml      # Points to OPF
+├── OEBPS/
+│   ├── content.opf        # Metadata + file manifest
+│   ├── toc.ncx            # Table of contents
+│   ├── chapters/
+│   │   ├── ch_001.xhtml
+│   │   ├── ch_002.xhtml
+│   │   └── ...
+│   └── images/
+│       └── cover.jpg
+└── mimetype               # "application/epub+zip"
+
+
+# def download_extension(self, url: str, ext_name: str) -> bool:
+    #     """Download and extract extension"""
+    #     try:
+    #         zip_path = EXTENSIONS_DIR / f"{ext_name}.zip"
+            
+    #         print(f"Downloading {ext_name}...")
+    #         response = requests.get(url, timeout=30)
+    #         response.raise_for_status()
+            
+    #         # Save zip
+    #         with open(zip_path, 'wb') as f:
+    #             f.write(response.content)
+            
+    #         # Extract (overwrites old version)
+    #         extract_path = EXTENSIONS_DIR / ext_name
+    #         extract_path.mkdir(exist_ok=True)
+            
+    #         with zipfile.ZipFile(zip_path) as zf:
+    #             zf.extractall(extract_path)
+            
+    #         # Cleanup zip
+    #         zip_path.unlink()
+            
+    #         print(f"✓ {ext_name} installed successfully")
+    #         return True
+        
+    #     except Exception as e:
+    #         print(f"✗ Failed to install {ext_name}: {e}")
+    #         return False
